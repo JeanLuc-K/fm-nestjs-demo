@@ -9,25 +9,34 @@ export class BooksService {
               private readonly prismaService: PrismaService
   ) {}
 
-  async findAll() {
-    return this.prismaService.book.findMany()
+  async findAll(includeAuthor = false) {
+    return this.prismaService.book.findMany({
+      include: {
+        genres: true,
+        author: includeAuthor,
+      },
+    });
   };
 
   async findOne(id: string) {
     const book = await this.prismaService.book.findUnique({
       where: { id },
+      include: { genres: true },
     });
     if (!book) throw new NotFoundException(`Book with id ${id} not found`);
     return book;
   }
   
-  async create(data: { title: string; authorId: string; publisherId: string }) {
+  async create(data: { title: string; authorId: string; publisherId: string; genreIds?: string[] }) {
+    const { genreIds, ...bookData } = data;
     return this.prismaService.book.create({
       data: {
         id: crypto.randomUUID(),
-        ...data,
+        ...bookData,
         updatedAt: new Date(),
+        ...(genreIds && { genres: { connect: genreIds.map((id) => ({ id })) } }),
       },
+      include: { genres: true },
     });
   }
 
@@ -38,14 +47,17 @@ export class BooksService {
     });
   }
 
-  async update(id: string, data: { title?: string; authorId?: string; publisherId?: string }) {
+  async update(id: string, data: { title?: string; authorId?: string; publisherId?: string; genreIds?: string[] }) {
     await this.findOne(id);
+    const { genreIds, ...updateData } = data;
     return this.prismaService.book.update({
       where: { id },
       data: {
-        ...data,
+        ...updateData,
         updatedAt: new Date(),
+        ...(genreIds !== undefined && { genres: { set: genreIds.map((id) => ({ id })) } }),
       },
+      include: { genres: true },
     });
   }
 }

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateBookDto {
   @IsString()
@@ -12,6 +12,11 @@ export class CreateBookDto {
   @IsString()
   @IsNotEmpty()
   publisherId!: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  genreIds?: string[];
 }
 
 export class UpdateBookDto {

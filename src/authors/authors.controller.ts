@@ -14,30 +14,30 @@ export class AuthorsController {
   constructor(private readonly authorsService: AuthorsService) {}
 
   @Get()
-  findAll() {
-    return { authors: this.authorsService.findAll() };
+  async findAll() {
+    return this.authorsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authorsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return this.authorsService.findOne(id);
   }
 
   @Post()
-  create(@Body() author: { name: string; email: string }) {
+  async create(@Body() author: { name: string; email: string }) {
     return this.authorsService.create(author);
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() authorUpdate: { name?: string; email?: string },
   ) {
-    return this.authorsService.update(+id, authorUpdate);
+    return this.authorsService.update(id, authorUpdate);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.authorsService.delete(+id);
+  async delete(@Param('id') id: string) {
+    return this.authorsService.delete(id);
   }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './books.dto';
 
@@ -6,9 +6,9 @@ import { CreateBookDto } from './books.dto';
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
-  @Get("/findAll")
-  async findAll() {
-    return this.booksService.findAll();
+  @Get()
+  async findAll(@Query('includeAuthor') includeAuthor?: string) {
+    return this.booksService.findAll(includeAuthor === 'true');
   }
 
   @Get(':id')
