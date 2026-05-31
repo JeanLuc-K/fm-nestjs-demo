@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Author {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  books     Book[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Book {
+  id          String    @id @default(uuid())
+  title       String
+  authorId    String
+  author      Author    @relation(fields: [authorId], references: [id])
+  publisherId String
+  publisher   Publisher @relation(fields: [publisherId], references: [id])
+  genres      Genre[]
+  reviews     Review[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  comment   String
+  reviewId  String
+  review    Review   @relation(fields: [reviewId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Genre {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  books     Book[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Publisher {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  books     Book[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  bookId    String
+  book      Book      @relation(fields: [bookId], references: [id])
+  rating    Int
+  comments  Comment[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([userId, bookId])
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  reviews   Review[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
